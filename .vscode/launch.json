@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "novo_lisemodas_app",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                    "--no-sound-null-safety"
+                ]
+        }   
+    ]
+}

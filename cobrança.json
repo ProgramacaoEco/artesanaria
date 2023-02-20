@@ -1,0 +1,67 @@
+{
+    "amount": 66666,
+    "currency": "BRL",
+    "description": "Teste Eco Sistemas",
+    "on_behalf_of": "939f1c3a5c40447f9926829c5c8c346d",
+    "statement_descriptor": "Loja do Ivan",
+    "payment_type": "credit",
+    "source": {
+      "usage": "single_use",
+      "amount": 66666,
+      "currency": "BRL",
+      "type": "card",
+      "card": {
+        "card_number": "4532650104137832",
+        "holder_name": "PORTELINHA",
+        "expiration_month": "12",
+        "expiration_year": "2022",
+        "security_code": "123"
+      },
+      "installment_plan": null
+    },
+    "requisicao": {
+      "maxParcelas": 1,
+      "idRequisicaoPagamento": null,
+      "id_Terceiros": null,
+      "descricaoPagamento": "Teste Eco Sistemas",
+      "sellerID": "02039d44-b9dd-40c3-b3c4-83c066b7e178",
+      "buyerID": null,
+      "value": 66666,
+      "enviarWhatsapp": false,
+      "enviarTelegram": false,
+      "enviarSms": false,
+      "enviarEmail": true,
+      "split": false,
+      "valor_split": 0,
+      "tipo_split": null,
+      "documento_split": null,
+      "pagador": {
+        "pagadorID": null,
+        "pessoaID": null,
+        "clienteID": "02039d44-b9dd-40c3-b3c4-83c066b7e178",
+        "flagAtivo": true,
+        "tipoEvento": "I",
+        "nomeEvento": "SAVE",
+        "pessoa": {
+          "pessoaID": null,
+          "nome": "Lucas Neves",
+          "pessoaFisica": {
+            "pessoaID": null,
+            "cpf": "737.231.100-45",
+            "dataNascimento": null,
+            "estadoCivil": null,
+            "sexo": null
+          },
+          "pessoaJuridica": null,
+          "pessoaTelefone": [],
+          "pessoaEmail": [],
+          "pessoaEndereco": [],
+          "tipoEvento": "I",
+          "nomeEvento": "SAVE"
+        },
+        "id_Terceiros": null
+      }
+    },
+    "split_rule": null,
+    "split_rules": null
+  }

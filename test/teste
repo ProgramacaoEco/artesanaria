@@ -1,0 +1,341 @@
+
+
+  getById() async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+      // var accessToken = prefs.getString('accessToken');
+     pagadorID = ('f9624b84-a424-455e-a47c-7af08f965f7d');
+
+      http.Response response;
+
+    var urlGetById = Uri.https('dev.app.pagozap.com.br:3000', '/api/Pagador/GetByID/$pagadorID');
+
+    try {
+     response = await http.get(
+      urlGetById,
+      headers: {
+          "Authorization": "Bearer $accessToken",
+          "Accept": "application/json",
+         "content-type": "application/json"
+        },
+      );
+      dadosPagador = response.body;
+      print(json.decode(response.body));
+
+       if (response.statusCode == 200 || response.statusCode == 201) {
+             print(json.decode(response.body));
+              print('dados');
+      }
+    } catch (error) {
+      print(error);
+      print('error');
+      
+    }
+  }
+
+
+
+
+registrarCobranca() async {
+  http.Response response;
+
+  var urlRegistrarCobranca = Uri.https('dev.app.pagozap.com.br:3000', '/api/RequisicaoPagamento/RegistarRequisicaoPagamento');
+
+  try {
+
+    response = await http.post(
+      urlRegistrarCobranca,
+      headers: {
+         "Authorization": "Bearer $accessToken",
+          "Accept": "application/json",
+          "content-type": "application/json"
+      },
+      body: {
+        "idrequisicaoPagamento": null,
+        "descricaoPagamento": 'Pagamento das compras',
+        "sellerID": clienteLojaID,
+        "buyerID": pagadorID,
+        "value": '200',
+        "status": null,
+        "enviarWhatsapp": true,
+        "enviarTelegram": false,
+        "enviarSms": false,
+        "enviarEmail": false,
+        "split": false,
+        "valor_split": null,
+        "tipo_split": null,
+        "documento_split": null,
+        "pagador": dadosPagador
+
+      }
+    );
+    print(response.body); print(response.statusCode);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Enviado com sucesso!');
+      }
+
+  } catch (error) {
+    print(error);
+    print('Houve algum erro!');
+  }
+
+}
+
+enviarValoresPagoZap() async {
+  http.Response response;
+  print(dataNascimento);
+  var dadosLoja = await buscaTokenPagoZap();
+
+  var clienteLojaID = dadosLoja['clienteLojaID'];
+  var accessToken = dadosLoja['accessToken'];
+
+
+  try {
+    response = await http.post(
+      urlCadastroPagadorPagoZap,
+      headers: {
+        "Authorization": "Bearer $accessToken",
+        "Accept": "application/json",
+        "content-type": "application/json"
+      },
+      body: jsonEncode({
+        "pagadorID": null,
+        "pessoaID": null,
+        "clienteID": clienteLojaID,
+        "flagAtivo": true,
+        "tipoEvento": "I",
+        "nomeEvento": "Save",
+        "pessoa": {
+          "pessoaID": null,
+          "nome": nome,
+          "pessoaFisica": {
+            "pessoaID": null,
+            "cpf": cpf,
+            "dataNascimento": dataNascimento,
+            "estadoCivil": estadoCivil,
+            "sexo": sexo
+          },
+          "pessoaJuridica": {},
+          "pessoaTelefone": [
+            {
+              "pessoaID": null,
+              "ddi": "55",
+              "ddd": "51",
+              "numero": "984925132",
+              "flagPrincipal": true,
+              "whatsApp": true,
+              "telegram": false
+            }
+          ],
+          "pessoaEmail": [
+            {
+              "pessoaID": null,
+              "email": email,
+              "flagPrincipal": true
+            }
+          ],
+          "pessoaEndereco": [
+            {
+              "pessoaID": null,
+              "uf": 'RS',
+              "municipio": municipio.text,
+              "bairro": bairro.text,
+              "logradouro": logradouro.text,
+              "numero": numero.text,
+              "complemento": complemento.text,
+              "cep": cep.text,
+              "flagPrincipal": true
+            }
+          ],
+          "tipoEvento": "I",
+          "nomeEvento": "Save"
+        },
+        "id_Terceiros": null
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      pagadorID = json.decode(response.body);
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('pagadorID', pagadorID);
+          fez = true;
+        Navigator.pushNamed(context, '/home');
+      print(pagadorID);
+    }
+  } catch (error) {
+    print(error);
+  }
+}
+
+buscaTokenPagoZap() async {
+  http.Response response;
+
+  String login = '08.951.144/0001-35';
+  String senha = '@EcoSistemas123';
+  String mobile = 'true';
+
+  try {
+    response = await http.post(
+      urlTokenPagoZap,
+      headers: {
+        "Accept": "application/json",
+        "content-type": "application/json"
+      },
+      body: jsonEncode({'login': login, 'senha': senha, 'mobile': mobile}),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var dados = jsonDecode(response.body);
+
+     accessToken = dados['accessToken'];
+      var dadosClienteLoja = jsonDecode(dados['objetoRetorno']);
+
+      var clienteLojaID = dadosClienteLoja['usuarioID'];
+
+      var dadosLoja = {
+        "accessToken": accessToken,
+        "clienteLojaID": clienteLojaID
+      };
+      
+
+      return dadosLoja;
+    }
+  } catch (error) {
+    print(error);
+
+    return null;
+  }
+}
+
+{
+  "clienteID": "string",
+  "pessoaID": "string",
+  "flagAtivo": true,
+  "pessoas": {
+    "pessoaID": "string",
+    "nome": "string",
+    "pessoaFisica": {
+      "pessoaID": "string",
+      "cpf": "string",
+      "dataNascimento": "2022-03-02T12:52:08.418Z",
+      "estadoCivil": "string",
+      "sexo": "string"
+    },
+    "pessoaJuridica": {
+      "pessoaID": "string",
+      "nomeFantasia": "string",
+      "cnpj": "string"
+    },
+    "pessoaTelefone": [
+      {
+        "pessoaID": "string",
+        "ddi": "string",
+        "ddd": "string",
+        "numero": "string",
+        "flagPrincipal": true,
+        "whatsApp": true,
+        "telegram": true
+      }
+    ],
+    "pessoaEmail": [
+      {
+        "pessoaID": "string",
+        "email": "string",
+        "flagPrincipal": true
+      }
+    ],
+    "pessoaEndereco": [
+      {
+        "pessoaID": "string",
+        "uf": "string",
+        "municipio": "string",
+        "bairro": "string",
+        "logradouro": "string",
+        "numero": "string",
+        "complemento": "string",
+        "cep": "string",
+        "flagPrincipal": true
+      }
+    ],
+    "tipoEvento": "string",
+    "nomeEvento": "string"
+  },
+  "tipoEvento": "string",
+  "nomeEvento": "string",
+  "id_Terceiros": "string",
+  "username": "string",
+  "password": "string",
+  "integraZoop": true,
+  "mcc": "string",
+  "numFuncionarios": "string",
+  "piXkey": "string",
+  "faixaRenda": "string"
+}
+
+
+metodoRegistraPedido {
+             var list = await dbHelper.queryAllRowsLogado();
+
+            if (
+                bairroSelecionado == null ||
+                formaSelecionada == null ||
+                cidadeSelecionada == null  ) {
+              Toast.show(
+                  "Dados inválidos, verifique os campos preenchidos e tente novamente",
+                  context,
+                  gravity: Toast.TOP,
+                  duration: Toast.LENGTH_LONG,
+                  backgroundColor: Color(cor.tema));
+
+            var conta = ( (valorTotalCarrinho) * juros) + valorTotalCarrinho + freteSelecionado;
+            print(conta);
+            } else {
+              try {
+                responsepedido = await http.post(
+                  urlpedido,
+                  body: {
+                    "itens_pedido": json.encode(itensPedido.toList()),
+                    "valor": json.encode(double.parse(
+                          valorTotalCarrinho.replaceAll(",", "."),
+                        ) +
+                        freteSelecionado),
+                   // "quantidade": json.encode(quantidade),
+                    // "forma_pagamento": json.encode(formaSelecionada),
+                    // "vezes_pagamento": json.encode(parcelaSelecionada),
+                    // "nome_cliente": json.encode(nome.text),
+                    // "valor_frete": json.encode(freteSelecionado),
+                    // "bairro": json.encode("${bairroSelecionado}"),
+                    // "endereco_entrega": json.encode("${logradouro.text}, ${numero.text}"),
+                    // "complemento": json.encode(complemento.text),
+                    // "cidade": json.encode(cidadeSelecionada),
+                    // "telefone": json.encode(telefone.text),
+                    // "status_pedido": 'pendente',
+                  },
+                );
+              } catch (error) {
+                Toast.show("Ocorreu um erro ao enviar o pedido $error", context,
+                    gravity: Toast.TOP,
+                    duration: Toast.LENGTH_LONG,
+                    backgroundColor: Colors.orange);
+              }
+              if (responsepedido.statusCode == 200 || 
+                  responsepedido.statusCode == 201) {
+                Toast.show(
+                  "Pedido enviado com sucesso",
+                  context,
+                  gravity: Toast.TOP,
+                  duration: Toast.LENGTH_LONG,
+                  backgroundColor: Color(cor.tema)
+                );
+                dbHelper.limparCarrinho();
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              } else {
+                Toast.show("Ocorreu um erro ao enviar o pedido", context,
+                    gravity: Toast.TOP,
+                    duration: Toast.LENGTH_LONG,
+                  
+                    backgroundColor: Color(cor.tema));
+              }
+            }
+          },
+}
